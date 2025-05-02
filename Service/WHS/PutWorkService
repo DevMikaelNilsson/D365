@@ -1,0 +1,102 @@
+/// <summary>
+/// A WHSWork service that performs a Put process on all referenced
+/// WHSWorkLine records.
+/// </summary>
+public class PutWorkService extends CloseWorkService
+{
+    private WHSWorkLine localWhsWorkLine;
+    private WHSWorkTable localWhsWorkTable;
+
+    /// <summary>
+    /// Create a new class instance.
+    /// </summary>
+    /// <param name = "_whsUserId">WHSUserId</param>
+    /// <param name = "_whsWorkLine">WHSWorkLine</param>
+    /// <param name = "_inventLocationId">InventLocationId - Optional</param>
+    protected void new(
+        WHSUserId _whsUserId,
+        WHSWorkLine _whsWorkLine,
+        InventLocationId _inventLocationId = '')
+    {
+        super(
+            _whsUserId,
+            '');
+
+        localWhsWorkLine = _whsWorkLine;
+        localWhsWorkTable = WHSWorkTable::find(
+            _whsWorkLine.WorkId);
+    }
+
+    /// <summary>
+    /// Create and return a new class instance.
+    /// </summary>
+    /// <param name = "_whsUserId">WHSUserId</param>
+    /// <param name = "_whsWorkLine">WHSWorkLine</param>
+    /// <returns>PutWorkService</returns>
+    public static PutWorkService construct(
+        WHSUserId _whsUserId,
+        WHSWorkLine _whsWorkLine)
+    {
+        return new PutWorkService(
+            _whsUserId,
+            _whsWorkLine);
+    }
+
+    /// <summary>
+    /// Perform a Put for each referenced work record.
+    /// </summary>
+    /// <returns>CloseWorkServiceResult</returns>
+    public CloseWorkServiceResult putWorkForCluster()
+    {
+        try
+        {
+            ttsbegin;
+            this.executePutWorks();
+            ttscommit;
+        }
+        catch
+        {
+            return CloseWorkServiceResult::construct(
+                false,
+                "@Error:PutWorkServiceError");
+        }
+
+        return CloseWorkServiceResult::construct();
+    }
+
+    /// <summary>
+    /// Processes the put work position
+    /// </summary>
+    protected void executePutWorks()
+    {
+        WhsWorkExecute::construct()
+            .putAwayToLocation(
+                localWhsWorkLine.WorkId, // WorkID
+                localWhsWorkLine.LineNum, // LineNum
+                localWhsWorkLine.wMSLocationId, // LocationID
+                this.retrieveWorkPutFlow(localWhsWorkLine), // WorkPutFlow; SplitQuantity oder MoveAll
+                this.parmWhsUserId(), // UserId
+                localWhsWorkTable.TargetLicensePlateId, // Source licenseplate
+                localWhsWorkTable.TargetLicensePlateId, // target licenseplate
+                false); // Handled by Licenseplate
+    }
+
+    /// <summary>
+    /// Detemin the type of WorkPutflow to be used.
+    /// </summary>
+    /// <param name = "_workLine">WHSWorkLine</param>
+    /// <returns>WHSWorkPutFlow</returns>
+    protected WHSWorkPutFlow retrieveWorkPutFlow(
+        WHSWorkLine _workLine)
+    {
+        WHSWorkLine prevOppositeWorkLine = WHSWorkLine::getPrevOppositeWorkLine(
+            _workLine.WorkId, 
+            _workLine.LineNum, 
+            _workLine.WorkType);            
+
+        return prevOppositeWorkLine.InventQtyWork > _workLine.InventQtyWork 
+            ? WHSWorkPutFlow::SplitQuantity 
+            : WHSWorkPutFlow::MoveAll;
+    }
+
+}
