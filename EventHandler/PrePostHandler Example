@@ -5,6 +5,6 @@ public static void EcoResProductReleaseManager_Post_release(XppPrePostArgs _args
      EcoResProductReleaseManager releaseMgr = _args.getThis();
      // Getting a class parameter
      ItemId itemId = releaseMgr.parmItemId();
-     // Getting the method argument
+     // Getting a method argument
      boolean itemCreation = _args.getArg("_isCreation");
 }
