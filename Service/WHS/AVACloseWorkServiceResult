@@ -1,0 +1,57 @@
+/// <summary>
+/// Result data object class for the close work service.
+/// </summary>
+public class CloseWorkServiceResult
+{
+    private boolean successful;
+    private ErrorMessage errorMessage;
+
+    /// <summary>
+    /// Create a new class instance.
+    /// </summary>
+    /// <param name = "_successful">boolean</param>
+    /// <param name = "_errorMessage">ErrorMessage</param>
+    protected void new(
+        boolean _successful,
+        ErrorMessage _errorMessage)
+    {
+        successful = _successful;
+        errorMessage = successful == false
+            ? _errorMessage
+            : '';
+    }
+
+    /// <summary>
+    /// Construct and return a new class instance.
+    /// </summary>
+    /// <param name = "_successful">boolean</param>
+    /// <param name = "_errorMessage">ErrorMessage</param>
+    /// <returns>CloseWorkServiceResult</returns>
+    public static CloseWorkServiceResult construct(
+        boolean _successful = true,
+        ErrorMessage _errorMessage = '')
+    {
+        return new CloseWorkServiceResult(
+            _successful,
+            _errorMessage);
+    }
+
+    /// <summary>
+    /// Return the successful flag.
+    /// </summary>
+    /// <returns>boolean</returns>
+    public boolean isSuccessful()
+    {
+        return successful;
+    }
+
+    /// <summary>
+    /// Return the errorMessage string.
+    /// </summary>
+    /// <returns>ErrorMessage</returns>
+    public ErrorMessage errorMessage()
+    {
+        return errorMessage;
+    }
+
+}
