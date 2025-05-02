@@ -49,7 +49,7 @@ public class PickWorkService extends CloseWorkService
         {
             return CloseWorkServiceResult::construct(
                 false, 
-                "@TAKKO:PickWorkServiceError");
+                "@Error:PickWorkServiceError");
         }
 
         return CloseWorkServiceResult::construct();
