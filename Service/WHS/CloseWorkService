@@ -1,0 +1,80 @@
+/// <summary>
+///  Picking Framework
+/// A WHSWork based service that supports with picking and putting work
+/// processes.
+/// </summary>
+public class CloseWorkService
+{
+    private WHSUserId localWhsUserId;
+    private WHSLicensePlate localLicensePlate;
+
+    /// <summary>
+    /// Create a new class instance.
+    /// </summary>
+    /// <param name = "_whsUserId">WHSUserId</param>
+    protected void new(
+        WHSUserId _whsUserId)
+    {
+        localId = _Id;
+        localWhsUserId = _whsUserId;
+        localLicensePlate = WHSLicensePlate::find(_Id);
+    }
+
+    /// <summary>
+    /// Get/set WHSUserId
+    /// </summary>
+    /// <param name = "_whsUserId">WHSUserId</param>
+    /// <returns>WHSUserId</returns>
+    protected WHSUserId parmWhsUserId(
+        WHSUserId _whsUserId = localWhsUserId)
+    {
+        localWhsUserId = _whsUserId;
+        return localWhsUserId;
+    }
+
+    /// <summary>
+    /// Get/set WHSLicensePlate
+    /// </summary>
+    /// <param name = "_licensePlate">WHSLicensePlate</param>
+    /// <returns>WHSLicensePlate</returns>
+    protected WHSLicensePlate parmLicensePlate(
+        WHSLicensePlate _licensePlate =  localLicensePlate)
+    {
+        localLicensePlate = _licensePlate;
+        return localLicensePlate;
+    }
+
+    /// <summary>
+    /// Automatically update the  status depending on the work header status.
+    /// </summary>
+    protected void updateWorkStatus()
+    {
+        WHSWorkTable workTable;
+        WHSWorkLine Line;
+
+        while select WorkId, WorkStatus from workTable
+        exists join Line
+            where Line.WorkId == workTable.WorkId
+            && Line.Id == this.parmId()
+        {
+            switch(workTable.WorkStatus)
+            {
+                case WHSWorkStatus::InProcess:
+                    WHSWorkTable::updateStatus(
+                        this.parmId(),
+                        WHSWorkStatus::InProcess);
+                    return;
+                case WHSWorkStatus::Closed:
+                    WHSWorkTable::updateStatus(
+                        this.parmId(),
+                        WHSWorkStatus::Closed);
+                    return;
+            }
+        }
+
+        WHSWorkTable::updateStatus(
+            this.parmId(),
+            WHSWorkStatus::Open);
+    }
+
+}
