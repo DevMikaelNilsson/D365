@@ -1,0 +1,106 @@
+/// <summary>
+/// Custom methods to obtain Invent on-hand information.
+/// </summary>
+public class InventOnHandModel
+{
+    /// <summary>
+    /// Get the InventDim table record from the invent on hand
+    /// for a specific item and dimensions.
+    /// </summary>
+    /// <param name = "_itemId">ItemId</param>
+    /// <param name = "_inventDimCriteria">InventDim</param>
+    /// <param name = "_inventDimParmCriteria">InventDimParm</param>
+    /// <param name = "_inventDimParmOnHandLevel">InventDimParm</param>
+    /// <returns>InventDim</returns>
+    public static InventDim getInventOnHandDimensionParm(
+        ItemId _itemId,
+        InventDim _inventDimCriteria,
+        InventDimParm _inventDimParmCriteria,
+        InventDimParm _inventDimParmOnHandLevel = InventOnHandModel::constructInventDimParmWithAllFlags())
+    {
+        InventDim inventDimDimParm;
+        InventDimOnHand inventDimOnHand = InventDimOnHand_Physical::newPhysical(
+            _itemId,
+            _inventDimCriteria,
+            _inventDimParmCriteria,
+            inventDimOnHandLevel::DimParm,
+            _inventDimParmOnHandLevel);
+
+        InventDimOnHandIterator inventDimOnHandIterator = inventDimOnHand.onHandIterator();
+        while (inventDimOnHandIterator.more())
+        {
+            InventDimOnHandMember inventDimOnHandMember = inventDimOnHandIterator.value();
+            inventDimDimParm = InventDim::find(
+                inventDimOnHandMember.parmInventDimId());
+            inventDimOnHandIterator.next();
+        }
+
+        return inventDimDimParm;
+    }
+
+    /// <summary>
+    /// Calculates the on hand value based on the defined inventory dimensions.
+    /// </summary>
+    /// <param name = "_inventDimCriteria">InventDim</param>
+    /// <param name = "_inventDimParmCriteria">InventDimParm</param>
+    /// <param name = "_itemId">ItemId - Optional</param>
+    /// <returns>Qty</returns>
+    public static Qty calculateilPhysicalOnHand(
+        InventDim _inventDimCriteria,
+        InventDimParm _inventDimParmCriteria,
+        ItemId _itemId = '')
+    {
+        Qty qty;
+        InventDimOnHand inventDimOnHand = InventDimOnHand_Physical::newPhysical(
+            _itemId,
+            _inventDimCriteria,
+            _inventDimParmCriteria,
+            inventDimOnHandLevel::Item,
+            null);
+
+        InventDimOnHandIterator inventDimOnHandIterator = inventDimOnHand.onHandIterator();
+        while (inventDimOnHandIterator.more())
+        {
+            InventDimOnHandMember inventDimOnHandMember = inventDimOnHandIterator.value();
+            qty += inventDimOnHandMember.parmInventQty();
+            inventDimOnHandIterator.next();
+        }
+
+        return qty;
+    }
+
+    /// <summary>
+    /// Creates and returns a InventDimParm object which all flags are active.
+    /// </summary>
+    /// <returns>InventDimParm</returns>
+    protected static InventDimParm constructInventDimParmWithAllFlags()
+    {
+        InventDimParm inventDimParmOnHandLevel;
+        inventDimParmOnHandLevel.ItemIdFlag = NoYes::Yes;
+        inventDimParmOnHandLevel.wmsLocationIdFlag = NoYes::Yes;
+        inventDimParmOnHandLevel.LicensePlateFlag = NoYes::Yes;
+        inventDimParmOnHandLevel.InventBatchIdFlag = NoYes::Yes;
+        inventDimParmOnHandLevel.InventStatusFlag = NoYes::Yes;
+        inventDimParmOnHandLevel.InventSiteIdFlag = NoYes::Yes;
+        inventDimParmOnHandLevel.InventLocationIdFlag = NoYes::Yes;
+        inventDimParmOnHandLevel.ConfigIdFlag = NoYes::Yes;
+        inventDimParmOnHandLevel.InventColorIdFlag = NoYes::Yes;
+        inventDimParmOnHandLevel.InventStyleIdFlag = NoYes::Yes;
+        inventDimParmOnHandLevel.InventSizeIdFlag = NoYes::Yes;
+        inventDimParmOnHandLevel.InventSerialIdFlag = NoYes::Yes;
+        inventDimParmOnHandLevel.InventDimension1Flag = NoYes::Yes; 
+        inventDimParmOnHandLevel.InventDimension2Flag = NoYes::Yes;
+        inventDimParmOnHandLevel.InventDimension3Flag = NoYes::Yes;
+        inventDimParmOnHandLevel.InventDimension4Flag = NoYes::Yes;
+        inventDimParmOnHandLevel.InventDimension5Flag = NoYes::Yes;
+        inventDimParmOnHandLevel.InventDimension6Flag = NoYes::Yes;
+        inventDimParmOnHandLevel.InventDimension7Flag = NoYes::Yes;
+        inventDimParmOnHandLevel.InventDimension8Flag = NoYes::Yes;
+        inventDimParmOnHandLevel.InventDimension9Flag = NoYes::Yes;
+        inventDimParmOnHandLevel.InventDimension10Flag = NoYes::Yes;
+        inventDimParmOnHandLevel.InventDimension11Flag = NoYes::Yes;
+        inventDimParmOnHandLevel.InventDimension12Flag = NoYes::Yes;
+        return inventDimParmOnHandLevel;
+    }
+
+}
