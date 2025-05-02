@@ -46,7 +46,7 @@ public class PutWorkService extends CloseWorkService
     /// Perform a Put for each referenced work record.
     /// </summary>
     /// <returns>CloseWorkServiceResult</returns>
-    public CloseWorkServiceResult putWorkForCluster()
+    public CloseWorkServiceResult putWork()
     {
         try
         {
