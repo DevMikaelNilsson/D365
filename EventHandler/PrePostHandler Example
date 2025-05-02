@@ -7,4 +7,6 @@ public static void EcoResProductReleaseManager_Post_release(XppPrePostArgs _args
      ItemId itemId = releaseMgr.parmItemId();
      // Getting a method argument
      boolean itemCreation = _args.getArg("_isCreation");
+     // Set a return value
+     _args.setReturnValue("value");
 }
