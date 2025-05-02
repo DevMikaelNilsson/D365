@@ -1,5 +1,4 @@
 /// <summary>
-///  Picking Framework
 /// A WHSWork based service that supports with picking and putting work
 /// processes.
 /// </summary>
