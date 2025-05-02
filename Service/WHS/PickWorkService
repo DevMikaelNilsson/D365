@@ -1,0 +1,113 @@
+/// <summary>
+/// A WHSWork service that performs a Pick process on all referenced
+/// WHSWorkLine records.
+/// </summary>
+public class PickWorkService extends CloseWorkService
+{
+    /// <summary>
+    /// Create a new class instance.
+    /// </summary>
+    /// <param name = "_whsUserId">WHSUserId</param>
+    /// <param name = "_inventLocationId">InventLocationId</param>
+    protected void new(
+        WHSUserId _whsUserId,
+        InventLocationId _inventLocationId)
+    {
+        super(
+            _whsUserId,
+            _inventLocationId);
+    }
+
+    /// <summary>
+    /// Create and return a new class instance.
+    /// </summary>
+    /// <param name = "_whsUserId">WHSUserId</param>
+    /// <param name = "_inventLocationId">InventLocationId</param>
+    /// <returns>PickWorkService</returns>
+    public static PickWorkService construct(
+        WHSUserId _whsUserId,
+        InventLocationId _inventLocationId)
+    {
+        return new PickWorkService(
+            _whsUserId,
+            _inventLocationId);
+    }
+
+    /// <summary>
+    /// Perform a pick for each referenced work record.
+    /// </summary>
+    /// <returns>CloseWorkServiceResult</returns>
+    public CloseWorkServiceResult pickWork()
+    {
+        try
+        {
+            ttsbegin;
+            this.executePickWorks();
+            ttscommit;
+        }
+        catch
+        {
+            return CloseWorkServiceResult::construct(
+                false, 
+                "@TAKKO:PickWorkServiceError");
+        }
+
+        return CloseWorkServiceResult::construct();
+    }
+
+    /// <summary>
+    /// Executes all listed work line records.
+    /// </summary>
+    protected void executePickWorks()
+    {
+        Query pickWorkLinesQuery = new Query(queryStr(PickWorkServiceQuery));
+        QueryRun pickWorkLines = new QueryRun(pickWorkLinesQuery);
+        while(pickWorkLines.next())
+        {
+            WHSWorkLine workLine = pickWorkLines.get(tableNum(WHSWorkLine)) as WHSWorkLine;
+            WHSWorkTable workTable = pickWorkLines.get(tableNum(WHSWorkTable)) as WHSWorkTable;
+            InventDim onHandInventDim = this.getDimensionForOnHandItemInventory(workLine);
+
+            WHSUserId currentUser = this.parmWhsUserId();
+            WHSLicensePlateId currentLicensePlateId = this.parmLicensePlate().LicensePlateId;
+            WhsWorkExecute::construct().pickWorkFromLicensePlate(
+                currentLicensePlateId,
+                workLine,
+                currentUser,
+                onHandInventDim,
+                workTable.TargetLicensePlateId,
+                0,
+                false,
+                NoYes::No,
+                false,
+                false);
+        }
+    }
+
+    /// <summary>
+    /// Get the InventDim which is referenced in the on hand inventory based on the 
+    /// license plate and location
+    /// </summary>
+    /// <param name = "_workLine">WHSWorkLine</param>
+    /// <returns>InventDim</returns>
+    protected InventDim getDimensionForOnHandItemInventory(
+        WHSWorkLine _workLine)
+    {
+        InventDim inventDimCriteria;
+        inventDimCriteria.LicensePlateId = this.parmLicensePlate().LicensePlateId;
+        inventDimCriteria.wMSLocationId = _workLine.WMSLocationId;
+        inventDimCriteria.InventLocationId = this.parmInventLocationId();
+        inventDimCriteria = InventDim::findOrCreate(inventDimCriteria);
+
+        InventDimParm inventDimParmCriteria;
+        inventDimParmCriteria.LicensePlateFlag = NoYes::Yes;
+        inventDimParmCriteria.wmsLocationIdFlag = NoYes::Yes;
+        inventDimParmCriteria.InventLocationIdFlag = NoYes::Yes;
+
+        return InventOnHandModel::getInventOnHandDimensionParm(
+            _workLine.ItemId,
+            inventDimCriteria,
+            inventDimParmCriteria);
+    }
+
+}
