@@ -43,38 +43,4 @@ public class CloseWorkService
         localLicensePlate = _licensePlate;
         return localLicensePlate;
     }
-
-    /// <summary>
-    /// Automatically update the  status depending on the work header status.
-    /// </summary>
-    protected void updateWorkStatus()
-    {
-        WHSWorkTable workTable;
-        WHSWorkLine Line;
-
-        while select WorkId, WorkStatus from workTable
-        exists join Line
-            where Line.WorkId == workTable.WorkId
-            && Line.Id == this.parmId()
-        {
-            switch(workTable.WorkStatus)
-            {
-                case WHSWorkStatus::InProcess:
-                    WHSWorkTable::updateStatus(
-                        this.parmId(),
-                        WHSWorkStatus::InProcess);
-                    return;
-                case WHSWorkStatus::Closed:
-                    WHSWorkTable::updateStatus(
-                        this.parmId(),
-                        WHSWorkStatus::Closed);
-                    return;
-            }
-        }
-
-        WHSWorkTable::updateStatus(
-            this.parmId(),
-            WHSWorkStatus::Open);
-    }
-
 }
