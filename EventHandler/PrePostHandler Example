@@ -1,0 +1,10 @@
+[PostHandlerFor(classStr(EcoResProductReleaseManager), methodStr(EcoResProductReleaseManager, release))]
+public static void EcoResProductReleaseManager_Post_release(XppPrePostArgs _args)
+{
+     // Getting the class object
+     EcoResProductReleaseManager releaseMgr = _args.getThis();
+     // Getting a class parameter
+     ItemId itemId = releaseMgr.parmItemId();
+     // Getting the method argument
+     boolean itemCreation = _args.getArg("_isCreation");
+}
