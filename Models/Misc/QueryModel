@@ -1,0 +1,88 @@
+/// <summary>
+/// Model class with several query related methods.
+/// </summary>
+public class QueryModel
+{
+    private QueryBuildDatasource localQueryDatasource;
+
+    /// <summary>
+    /// Creates a new class instance.
+    /// </summary>
+    /// <param name = "_query">Query</param>
+    /// <param name = "_tableDatasource">TableId</param>
+    /// <param name = "_ParentTableDatasource">TableId</param>
+    protected void new(
+        Query _query,
+        TableId _tableDatasource,
+        TableId _ParentTableDatasource = 0)
+    {
+        localQueryDatasource = SysQuery::findOrCreateDataSource(
+            _query,
+            _tableDatasource,
+            _ParentTableDatasource);
+    }
+
+    /// <summary>
+    /// Adds table to the query with an optional parent table.
+    /// </summary>
+    /// <param name = "_query">Query</param>
+    /// <param name = "_tableDatasource">TableId</param>
+    /// <param name = "_ParentTableDatasource">TableId</param>
+    /// <returns>Returns the class instance so that the added datasource can be manipulated.</returns>
+    public static QueryModel findOrCreateDatasource(
+        Query _query,
+        TableId _tableDatasource,
+        TableId _ParentTableDatasource = 0)
+    {
+        return new QueryModel(
+            _query,
+            _tableDatasource,
+            _ParentTableDatasource);
+    }
+
+    /// <summary>
+    /// Add a range value to the datasource table
+    /// </summary>
+    /// <param name = "_fieldId">FieldId</param>
+    /// <param name = "_SysQueryRangeValue">str</param>
+    /// <param name = "_arrayIndex">int</param>
+    /// <returns>QueryModel</returns>
+    public QueryModel addRange(
+        FieldId _fieldId,
+        str _SysQueryRangeValue,
+        int _arrayIndex = 1)
+    {
+        localQueryDatasource.addRange(
+                _fieldId,
+                _arrayIndex)
+            .value(
+                _SysQueryRangeValue);
+
+        return this;
+    }
+
+    /// <summary>
+    /// Add a range value to the datasource table
+    /// </summary>
+    /// <param name = "_fieldId">FieldId</param>
+    /// <param name = "_SysQueryRangeValue">str</param>
+    /// <param name = "_queryRangeType">QueryRangeType</param>
+    /// <param name = "_arrayIndex">int</param>
+    /// <returns>QueryModel</returns>
+    public QueryModel addRangeWithRangeType(
+        FieldId _fieldId,
+        str _SysQueryRangeValue,
+        QueryRangeType _queryRangeType,
+        int _arrayIndex = 1)
+    {
+        localQueryDatasource.addRange(
+                _fieldId,
+                _arrayIndex,
+                _queryRangeType)
+            .value(
+                _SysQueryRangeValue);
+
+        return this;
+    }
+
+}
