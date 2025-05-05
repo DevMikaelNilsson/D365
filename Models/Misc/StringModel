@@ -1,0 +1,40 @@
+/// <summary>
+/// Custom general re-usable string methods
+/// </summary>
+public class StringModel
+{
+    /// <summary>
+    /// Convert a Map into a string with a specified seperator character.
+    /// </summary>
+    /// <param name = "_map">Map</param>
+    /// <param name = "_seperatorStr">str</param>
+    /// <returns>str</returns>
+    public static str convertMapValueToString(Map _map, str _seperatorStr = ',')
+    {
+        str returnStringValue;
+        MapEnumerator mapEnumerator = _map.getEnumerator();
+        while (mapEnumerator.moveNext())
+        {
+            if (returnStringValue)
+            {
+                returnStringValue += _seperatorStr;
+            }
+            returnStringValue += any2str(mapEnumerator.currentValue());
+        }
+
+        return returnStringValue;
+    }
+
+    /// <summary>
+    /// Replace a specific string character with another string character.
+    /// </summary>
+    /// <param name = "_baseString">str</param>
+    /// <param name = "_replaceString">str</param>
+    /// <param name = "_replaceWithString">str</param>
+    /// <returns>str</returns>
+    public static str replaceCharInString(str _baseString, str _replaceString, str _replaceWithString = '')
+    {
+        return strReplace(_baseString, _replaceString, _replaceWithString);
+    }
+
+}
