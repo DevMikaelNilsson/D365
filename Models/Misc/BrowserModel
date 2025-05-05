@@ -21,9 +21,9 @@ public class BrowserModel
 
         new Browser()
             .navigate(
-              _url, 
-              _openInNewTab, 
-              _showExitWarning);
+                _url, 
+                _openInNewTab, 
+                _showExitWarning);
     }
 
 }
