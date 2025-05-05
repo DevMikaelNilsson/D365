@@ -1,0 +1,29 @@
+/// <summary>
+/// General model class for handling custom browser functionality.
+/// </summary>
+public class BrowserModel
+{
+    /// <summary>
+    /// Opens a specified url address.
+    /// </summary>
+    /// <param name = "_url">Valid http path to a website.</param>
+    /// <param name = "_openInNewTab">Flag to determin if the link should be opened in a new tab.</param>
+    /// <param name = "_showExitWarning">Flag to determin if a exit warning should be displayed to the user.</param>
+    public static void openURL(
+        str _url, 
+        boolean _openInNewTab = true, 
+        boolean _showExitWarning = false)
+    {
+        if(!_url)
+        {
+            return;
+        }
+
+        new Browser()
+            .navigate(
+              _url, 
+              _openInNewTab, 
+              _showExitWarning);
+    }
+
+}
