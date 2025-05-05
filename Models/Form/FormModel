@@ -1,0 +1,60 @@
+/// <summary>
+/// Custom model class for general form methods and operations.
+/// </summary>
+public class FormModel
+{
+    /// <summary>
+    /// Finds and returns a FormStringControl object based on a field name.
+    /// </summary>
+    /// <param name = "_formRun">FormRun</param>
+    /// <param name = "_formControlStr">str</param>
+    /// <returns>FormStringControl</returns>
+    [SuppressBPWarning("BPUnusedStrFmtArgument", "The placeholder %1 is indeed used by the _formControlStr variable, but is not recognized by the compiler.")]
+    public static FormStringControl findFormStringCtrlObject(FormRun _formRun, str _formControlStr)
+    {
+        FormStringControl stringCtrl = _formRun.design().controlName(_formControlStr);
+        if(!stringCtrl)
+        {
+            throw Error(strFmt("@Error:FormModelFormStringControlNotFoundError", _formControlStr));
+        }
+
+        return stringCtrl;
+    }
+
+    /// <summary>
+    /// Finds and returns a FormStringControl object based on a field name.
+    /// </summary>
+    /// <param name = "_formRun">FormRun</param>
+    /// <param name = "_formControlStr">str</param>
+    /// <returns>FormComboBoxControl</returns>
+    [SuppressBPWarning("BPUnusedStrFmtArgument", "The placeholder %1 is indeed used by the _formControlStr variable, but is not recognized by the compiler.")]
+    public static FormComboBoxControl findFormComboBoxCtrlObject(FormRun _formRun, str _formControlStr)
+    {
+        FormComboBoxControl comboBoxCtrl = _formRun.design().controlName(_formControlStr);
+        if(!comboBoxCtrl)
+        {
+            throw Error(strFmt("@Error:FormModelFormComboBoxControlNotFoundError", _formControlStr));
+        }
+
+        return comboBoxCtrl;
+    }
+
+    /// <summary>
+    /// Finds and returns a generic Form control object based on a field name.
+    /// </summary>
+    /// <param name = "_formRun">FormRun</param>
+    /// <param name = "_formControlStr">str</param>
+    /// <returns>FormControl</returns>
+    [SuppressBPWarning("BPUnusedStrFmtArgument", "The placeholder %1 is indeed used by the _formControlStr variable, but is not recognized by the compiler.")]
+    public static FormControl findFormCtrlObject(FormRun _formRun, str _formControlStr)
+    {
+        FormControl formCtrl = _formRun.design().controlName(_formControlStr);
+        if(!formCtrl)
+        {
+            throw Error(strFmt("@Error:FormModelFormComboBoxControlNotFoundError", _formControlStr));
+        }
+
+        return formCtrl;
+    }
+
+}
