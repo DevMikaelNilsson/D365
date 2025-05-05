@@ -23,6 +23,26 @@ public class QueryModel
     }
 
     /// <summary>
+    /// Returns the first defined table record
+    /// from the query.
+    /// </summary>
+    /// <param name = "_query">Query</param>
+    /// <param name = "_tableId">TableId</param>
+    /// <returns>Common</returns>
+    public static Common returnFirstRecordFromQuery(
+        Query _query,
+        TableId _tableId)
+    {
+        QueryRun queryRun = new QueryRun(_query);
+        if (queryRun.next())
+        {
+            return queryRun.get(_tableId);
+        }
+
+        return null;
+    }
+
+    /// <summary>
     /// Adds table to the query with an optional parent table.
     /// </summary>
     /// <param name = "_query">Query</param>
