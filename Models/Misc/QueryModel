@@ -6,20 +6,35 @@ public class QueryModel
     private QueryBuildDatasource localQueryDatasource;
 
     /// <summary>
-    /// Creates a new class instance.
+    /// Adds table to the query with an optional parent table.
     /// </summary>
     /// <param name = "_query">Query</param>
     /// <param name = "_tableDatasource">TableId</param>
     /// <param name = "_ParentTableDatasource">TableId</param>
-    protected void new(
+    /// <returns>Returns the class instance so that the added datasource can be manipulated.</returns>
+    public static QueryModel findOrCreateDatasource(
         Query _query,
         TableId _tableDatasource,
         TableId _ParentTableDatasource = 0)
     {
-        localQueryDatasource = SysQuery::findOrCreateDataSource(
-            _query,
-            _tableDatasource,
-            _ParentTableDatasource);
+        return new QueryModel()
+            .initFromQuery(
+                _query,
+                _tableDatasource,
+                _ParentTableDatasource);
+    }
+
+    /// <summary>
+    /// Adds and initializes the class with a QueryBuildDatasource
+    /// </summary>
+    /// <param name = "_queryDatasource">QueryBuildDatasource</param>
+    /// <returns>Returns the class instance so that the added datasource can be manipulated.</returns>
+    public static QueryModel addQueryBuildDatasource(
+        QueryBuildDatasource _queryDatasource)
+    {
+        return new QueryModel()
+            .initFromQueryBuildDatasource(
+                _queryDatasource);
     }
 
     /// <summary>
@@ -43,21 +58,69 @@ public class QueryModel
     }
 
     /// <summary>
-    /// Adds table to the query with an optional parent table.
+    /// Initalizes the new class instance with query.
     /// </summary>
     /// <param name = "_query">Query</param>
     /// <param name = "_tableDatasource">TableId</param>
     /// <param name = "_ParentTableDatasource">TableId</param>
-    /// <returns>Returns the class instance so that the added datasource can be manipulated.</returns>
-    public static QueryModel findOrCreateDatasource(
+    private QueryModel initFromQuery(
         Query _query,
         TableId _tableDatasource,
         TableId _ParentTableDatasource = 0)
     {
-        return new QueryModel(
+        localQueryDatasource = SysQuery::findOrCreateDataSource(
             _query,
             _tableDatasource,
             _ParentTableDatasource);
+        return this;
+    }
+
+    /// <summary>
+    /// Initalizes the new class instance with QueryBuildDatasource.
+    /// </summary>
+    /// <param name = "_queryDatasource">QueryBuildDatasource</param>
+    private QueryModel initFromQueryBuildDatasource(
+        QueryBuildDatasource _queryDatasource)
+    {
+        localQueryDatasource = _queryDatasource;
+        return this;
+    }
+
+    /// <summary>
+    /// Get local QueryBuildDatasource value.
+    /// </summary>
+    /// <returns>QueryBuildDatasource</returns>
+    protected QueryBuildDatasource getQueryDatasource()
+    {
+        return localQueryDatasource;
+    }
+
+    /// <summary>
+    /// Adds a link relation value to the datasource table
+    /// </summary>
+    /// <param name = "_parentField">FieldId</param>
+    /// <param name = "_thisField">FieldId</param>
+    /// <param name = "_parentDatasourceName">str (Optional)</param>
+    /// <returns>QueryModel</returns>
+    public QueryModel addLink(
+        FieldId _parentField,
+        FieldId _thisField, 
+        str _parentDatasourceName = '')
+    {
+        if (!_parentDatasourceName)
+        {
+            localQueryDatasource.addLink(
+                _parentField,
+                _thisField);
+        }
+        else
+        {
+            localQueryDatasource.addLink(
+                _parentField,
+                _thisField,
+                _parentDatasourceName);
+        }
+        return this;
     }
 
     /// <summary>
