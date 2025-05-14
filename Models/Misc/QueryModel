@@ -168,4 +168,36 @@ public class QueryModel
         return this;
     }
 
+    /// <summary>
+    /// Clear all dynamic links
+    /// </summary>
+    /// <returns>QueryModel</returns>
+    public QueryModel clearDynaLinks()
+    {
+        localQueryDatasource.clearDynalinks();
+        return this;
+    }
+
+    /// <summary>
+    /// Clear all links
+    /// </summary>
+    /// <returns>QueryModel</returns>
+    public QueryModel clearLinks()
+    {
+        localQueryDatasource.clearLinks();
+        return this;
+    }
+
+    /// <summary>
+    /// Defines a join value for the datasource
+    /// </summary>
+    /// <param name = "_joinMode">JoinMode</param>
+    /// <returns>QueryModel</returns>
+    public QueryModel joinMode(
+        JoinMode _joinMode)
+    {
+        localQueryDatasource.joinMode(_joinMode);
+        return this;
+    }
+
 }
