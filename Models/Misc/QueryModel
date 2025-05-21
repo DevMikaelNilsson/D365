@@ -200,4 +200,103 @@ public class QueryModel
         return this;
     }
 
+    /// <summary>
+    /// Add a sort field to the datasource
+    /// </summary>
+    /// <param name = "_fieldId">FieldId</param>
+    /// <param name = "_sortOrder">SortOrder</param>
+    /// <returns>QueryModel</returns>
+    public QueryModel addSortField(
+        FieldId _fieldId,
+        SortOrder _sortOrder)
+    {
+        localQueryDatasource.addSortField(
+            _fieldId,
+            _sortOrder);
+        return this;
+    }
+
+    /// <summary>
+    /// Set relations flag value
+    /// </summary>
+    /// <param name = "_relations">boolean</param>
+    /// <returns>QueryModel</returns>
+    public QueryModel relations(
+        boolean _relations)
+    {
+        localQueryDatasource.relations(
+            _relations);
+        return this;
+    }
+
+    /// <summary>
+    /// Set FirstOnly flag value
+    /// </summary>
+    /// <param name = "_firstOnly">boolean</param>
+    /// <returns>QueryModel</returns>
+    public QueryModel firstOnly(
+        boolean _firstOnly)
+    {
+        localQueryDatasource.firstOnly(
+            _firstOnly);
+        return this;
+    }
+
+    /// <summary>
+    /// Add child datasource to the current datasource.
+    /// By executing this method the current, selected, datasource will be
+    /// set to the recently added datasource.
+    /// </summary>
+    /// <param name = "_anyTypeDatasourceRef">anytype</param>
+    /// <returns>QueryModel</returns>
+    public QueryModel addDatasource(
+        anytype _anyTypeDatasourceRef)
+    {
+        localQueryDatasource = localQueryDatasource
+            .addDataSource(
+                _anyTypeDatasourceRef);
+        return this;
+    }
+
+    /// <summary>
+    /// Add child datasource to the current datasource.
+    /// By executing this method the current, selected, datasource will be
+    /// set to the recently added datasource.
+    /// </summary>
+    /// <param name = "_anyTypeDatasourceRef">anytype</param>
+    /// <param name = "_name">str</param>
+    /// <returns>QueryModel</returns>
+    public QueryModel addDatasourceWithName(
+        anytype _anyTypeDatasourceRef,
+        str _name)
+    {
+        localQueryDatasource = localQueryDatasource
+            .addDataSource(
+                _anyTypeDatasourceRef,
+                _name);
+        return this;
+    }
+
+    /// <summary>
+    /// Add child datasource to the current datasource.
+    /// By executing this method the current, selected, datasource will be
+    /// set to the recently added datasource.
+    /// </summary>
+    /// <param name = "_anyTypeDatasourceRef">anytype</param>
+    /// <param name = "_name">str</param>
+    /// <param name = "_emptyFieldList">boolean</param>
+    /// <returns>QueryModel</returns>
+    public QueryModel addDatasourceWithNameAndEmptyFieldList(
+        anytype _anyTypeDatasourceRef,
+        str _name,
+        boolean _emptyFieldList)
+    {
+        localQueryDatasource = localQueryDatasource
+            .addDataSource(
+                _anyTypeDatasourceRef,
+                _name,
+                _emptyFieldList);
+        return this;
+    }
+
 }
