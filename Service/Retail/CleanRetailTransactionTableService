@@ -1,6 +1,13 @@
 /// <summary>
 /// Service class to clean transaction referecnes from a RetailTransactionTable
 /// table record.
+/// When posting statements can lead to error(s) if the income expense
+/// does not have a valid references. 
+/// One cause is that the income expense store transaction are not
+/// validated as the other store transaction. To solve this issue its needed to clean
+/// all references to the faulty income expense store transaction, then re-run the batch job
+/// to once more add the right references with the income expense store transaction and then
+/// successfully post statements.
 /// </summary>
 public class CleanRetailTransactionTableService
 {
