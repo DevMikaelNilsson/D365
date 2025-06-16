@@ -1,0 +1,223 @@
+/// <summary>
+/// Service class to clean transaction referecnes from a RetailTransactionTable
+/// table record.
+/// </summary>
+public class CleanRetailTransactionTableService
+{
+    private RetailTransactionTable localRetailTransactionTable;
+    private Args localArgs;
+
+    /// <summary>
+    /// Creates a new class instance
+    /// </summary>
+    /// <param name = "_retailTransactionTable">RetailTransactionTable</param>
+    /// <param name = "_args">Args</param>
+    protected void new(
+        RetailTransactionTable _retailTransactionTable,
+        Args _args)
+    {
+        localRetailTransactionTable = _retailTransactionTable;
+        localArgs = _args;
+    }
+
+    /// <summary>
+    /// Creates and returns a new class instance.
+    /// </summary>
+    /// <param name = "_retailTransactionTable">RetailTransactionTable</param>
+    /// <returns>CleanRetailTransactionTableService</returns>
+    public static CleanRetailTransactionTableService construct(
+        RetailTransactionTable _retailTransactionTable)
+    {
+        return new CleanRetailTransactionTableService(
+            _retailTransactionTable,
+            null);
+    }
+
+    /// <summary>
+    /// Main entry point for a menu item.
+    /// Creates a new class instance and runs the service
+    /// </summary>
+    /// <param name = "_args">Args</param>
+    public static void main(
+        Args _args)
+    {
+        new CleanRetailTransactionTableService(
+                _args.record() as RetailTransactionTable,
+                _args)
+            .cleanRetailTransactionTable();
+    }
+
+    /// <summary>
+    /// Cleans the referenced RetailTransactionTable table record
+    /// from all transaction references.
+    /// </summary>
+    [SuppressBPWarning("BPErrorUnknownLabel", "The strFmt label is not recognized by the compiler, eventhough it is available.")]
+    public void cleanRetailTransactionTable()
+    {
+        try
+        {
+            ttsbegin;
+            this.cleanRetailTransactionSalesTrans();
+            this.cleanRetailTransactionPaymentTrans();
+            this.cleanRetailTransactionInfocodeTrans();
+            this.cleanSelectedRetailTransactionTable();
+            this.cleanRetailTransactionIncomeExpenseTrans();
+            this.deleteReferenceRecords();
+            this.updateCallerFormDatasource();
+            ttscommit;
+            info("@ApplicationFoundation:OperationCompleted");
+        }
+        catch
+        {
+            error(
+                strFmt(
+                    "@SYS330665", 
+                    "@AVATAKKO:CleanRetailTransactionTableService_ErrorMessage"));
+        }
+    }
+
+    /// <summary>
+    /// Cleans the etailTransactionSalesTrans references.
+    /// </summary>
+    protected void cleanRetailTransactionSalesTrans()
+    {
+        RetailTransactionSalesTrans retailTransactionSalesTrans;
+        update_recordset retailTransactionSalesTrans
+            setting 
+                statementId = '',
+                transactionStatus = RetailEntryStatus::None
+            where 
+                RetailTransactionSalesTrans.transactionId == localRetailTransactionTable.transactionId
+                && RetailTransactionSalesTrans.Channel == localRetailTransactionTable.channel
+                && RetailTransactionSalesTrans.store == localRetailTransactionTable.store
+                && RetailTransactionSalesTrans.terminalId == localRetailTransactionTable.terminal;
+    }
+
+    /// <summary>
+    /// Cleans the RetailTransactionPaymentTrans references.
+    /// </summary>
+    protected void cleanRetailTransactionPaymentTrans()
+    {
+        RetailTransactionPaymentTrans retailTransactionPaymentTrans;
+        update_recordset retailTransactionPaymentTrans
+            setting
+                statementId = '',
+                transactionStatus = RetailEntryStatus::None
+            where
+                retailTransactionPaymentTrans.transactionId == localRetailTransactionTable.transactionId
+                && retailTransactionPaymentTrans.Channel == localRetailTransactionTable.channel
+                && retailTransactionPaymentTrans.store == localRetailTransactionTable.store
+                && retailTransactionPaymentTrans.terminal == localRetailTransactionTable.terminal;
+    }
+
+    /// <summary>
+    /// Cleans the RetailTransactionInfocodeTrans references.
+    /// </summary>
+    protected void cleanRetailTransactionInfocodeTrans()
+    {
+        RetailTransactionInfocodeTrans retailTransactionInfocodeTrans;
+        update_recordset retailTransactionInfocodeTrans
+            setting
+                statementId = '',
+                transactionStatus = RetailEntryStatus::None
+            where
+                retailTransactionInfocodeTrans.transactionId == localRetailTransactionTable.transactionId
+                && retailTransactionInfocodeTrans.Channel == localRetailTransactionTable.channel
+                && retailTransactionInfocodeTrans.store == localRetailTransactionTable.store
+                && retailTransactionInfocodeTrans.terminal == localRetailTransactionTable.terminal;
+    }
+
+    /// <summary>
+    /// Cleans the RetailTransactionIncomeExpenseTrans references.
+    /// </summary>
+    protected void cleanRetailTransactionIncomeExpenseTrans()
+    {
+        RetailTransactionIncomeExpenseTrans retailTransactionIncomeExpenseTrans;
+        update_recordset retailTransactionIncomeExpenseTrans
+            setting
+                statementId = '',
+                transactionStatus = RetailEntryStatus::None
+            where
+                retailTransactionIncomeExpenseTrans.transactionId == localRetailTransactionTable.transactionId
+                && retailTransactionIncomeExpenseTrans.Channel == localRetailTransactionTable.channel
+                && retailTransactionIncomeExpenseTrans.store == localRetailTransactionTable.store
+                && retailTransactionIncomeExpenseTrans.terminal == localRetailTransactionTable.terminal;
+    }
+
+    /// <summary>
+    /// Cleans the selected dRetailTransactionTable references.
+    /// </summary>
+    protected void cleanSelectedRetailTransactionTable()
+    {
+        localRetailTransactionTable.selectForUpdate(true);
+        localRetailTransactionTable.statementId = '';
+        localRetailTransactionTable.salesOrderId = '';
+        localRetailTransactionTable.InvoiceRecId = 0;
+        localRetailTransactionTable.entryStatus = RetailEntryStatus::None;
+        localRetailTransactionTable.update();
+        localRetailTransactionTable.selectForUpdate(false);
+    }
+
+    /// <summary>
+    /// Deletes any referenced table records
+    /// </summary>
+    protected void deleteReferenceRecords()
+    {
+        RetailEodTransactionTable retailEodTransactionTable;
+        delete_from retailEodTransactionTable
+            where retailEodTransactionTable.RetailTransactionTable == localRetailTransactionTable.RecId;
+
+        RetailEodTransactionSalesTrans retailEodTransactionSalesTrans;
+        delete_from retailEodTransactionSalesTrans
+            where retailEodTransactionSalesTrans.TransactionId == localRetailTransactionTable.transactionId;
+
+        RetailEodTransactionPaymentTrans retailEodTransactionPaymentTrans;
+        delete_from retailEodTransactionPaymentTrans
+            where retailEodTransactionPaymentTrans.TransactionId == localRetailTransactionTable.transactionId;
+
+        RetailEodTransactionInfocodeTrans retailEodTransactionInfocodeTrans;
+        delete_from retailEodTransactionInfocodeTrans
+            where retailEodTransactionInfocodeTrans.TransactionId == localRetailTransactionTable.transactionId;
+
+        RetailEodTransactionIncomeExpenseTrans retailEodTransactionIncomeExpenseTrans;
+        delete_from retailEodTransactionIncomeExpenseTrans
+            where retailEodTransactionIncomeExpenseTrans.TransactionId == localRetailTransactionTable.transactionId;
+
+        RetailEodTransactionAggregationTrans retailEodTransactionAggregationTrans;
+        delete_from retailEodTransactionAggregationTrans
+            where retailEodTransactionAggregationTrans.TransactionId == localRetailTransactionTable.transactionId;
+
+        RetailEodTransactionAggregationHeader retailEodTransactionAggregationHeader;
+        delete_from retailEodTransactionAggregationHeader
+            exists join retailEodTransactionAggregationTrans
+                where retailEodTransactionAggregationTrans.RetailEodTransactionAggregationHeader == retailEodTransactionAggregationHeader.RecId
+                && retailEodTransactionAggregationTrans.TransactionId == localRetailTransactionTable.transactionId;
+    }
+
+    /// <summary>
+    /// Updates the caller form datasource (if available)
+    /// to display the changes from the service call.
+    /// </summary>
+    protected void updateCallerFormDatasource()
+    {
+        if (!localArgs)
+        {
+            return;
+        }
+
+        FormRun callerForm = localArgs.caller();
+        if (!callerForm)
+        {
+            return;
+        }
+
+        Formdatasource callerDataSource = callerForm.dataSource();
+        if (!callerDataSource)
+        {
+            return;
+        }
+
+        callerDataSource.research(true);
+    }
+
+}
