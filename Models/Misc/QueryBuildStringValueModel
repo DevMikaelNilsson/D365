@@ -1,0 +1,77 @@
+/// <summary>
+/// Model class to build a query string value for 
+/// table selections.
+/// </summary>
+public class QueryBuildStringValueModel
+{
+    private TableId localTableId;
+    private TableName localTableName;
+    private str localStringValue;
+
+    /// <summary>
+    /// Create a new class instance.
+    /// </summary>
+    /// <param name = "_tableId">TableId</param>
+    protected void new(
+        TableId _tableId)
+    {
+        localTableId = _tableId;
+        localTableName = tableId2Name(_tableId);
+        localStringValue = '';
+    }
+
+    /// <summary>
+    /// Creates and returns a new class instance.
+    /// </summary>
+    /// <param name = "_tableId">TableId</param>
+    /// <returns>QueryBuildStringValueModel</returns>
+    public static QueryBuildStringValueModel construct(
+        TableId _tableId)
+    {
+        return new QueryBuildStringValueModel(
+            _tableId);
+    }
+
+    /// <summary>
+    /// Returns the created build string
+    /// </summary>
+    /// <param name = "_encloseWithBrackets">boolean</param>
+    /// <returns>str</returns>
+    public str getBuildStringValue(
+        boolean _encloseWithBrackets = true)
+    {
+        return 
+            _encloseWithBrackets 
+            ? ('(' + localStringValue + ')')
+            : localStringValue;
+    }
+
+    /// <summary>
+    /// Adds a OR clause to the existing QueryBuildRange.
+    /// If there isn't any already defined range value, a new will be automatically
+    /// created but without the OR clause.
+    /// </summary>
+    /// <param name = "_fieldId">FieldId</param>
+    /// <param name = "_SysQueryStringValue">str</param>
+    /// <returns>QueryBuildStringValueModel</returns>
+    public QueryBuildStringValueModel addOrClause(
+        FieldId _fieldId,
+        str _SysQueryStringValue)
+    {
+        if (localStringValue)
+        {
+            localStringValue = strFmt('%1 || (%2 = %3)',
+                        localStringValue,
+                        new SysDictTable(localTableId).fieldObject(_fieldId).name(),
+                        SysQuery::value(_SysQueryStringValue));
+        }
+        else
+        {
+            localStringValue = strFmt('(%1 = %2)',
+                        new SysDictTable(localTableId).fieldObject(_fieldId).name(),
+                        SysQuery::value(_SysQueryStringValue));
+        }
+
+        return this;
+    }
+}
