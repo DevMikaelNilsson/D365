@@ -57,4 +57,18 @@ public class FormModel
         return formCtrl;
     }
 
+    /// <summary>
+    /// Marks a record in the defined datasource based on which record is currently selected.
+    /// </summary>
+    /// <param name = "_frmDatasource">FormDataSource</param>
+    /// <param name = "_setPositionToRecord">Common</param>
+    public static void highlightMarkedReferencedRecord(
+        FormDataSource _frmDatasource,
+        Common _setPositionToRecord)
+    {
+        _frmDatasource.mark(
+            _frmDatasource
+                .positionToRecord(
+                    _setPositionToRecord));
+    }
 }
