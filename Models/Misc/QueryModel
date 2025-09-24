@@ -25,6 +25,18 @@ public class QueryModel
     }
 
     /// <summary>
+    /// Clear all ranges
+    /// </summary>
+    /// <returns>AVAQueryModel</returns>
+    public QueryModel clearRanges()
+    {
+        localQueryDatasource
+            .clearRanges();
+
+        return this;
+    }
+
+    /// <summary>
     /// Adds and initializes the class with a QueryBuildDatasource
     /// </summary>
     /// <param name = "_queryDatasource">QueryBuildDatasource</param>
