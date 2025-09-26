@@ -311,4 +311,35 @@ public class QueryModel
         return this;
     }
 
+    /// <summary>
+    /// Get a value from a QueryBuildRange from a defined QueryBuildDatasource.
+    /// </summary>
+    /// <param name = "_rangeFieldName">FieldName</param>
+    /// <param name = "_query">Query</param>
+    /// <param name = "_tableDatasource">TableId</param>
+    /// <param name = "_ParentTableDatasource">TableId</param>
+    /// <returns>str</returns>
+    public static str getRangeValueFromQuery(
+        FieldName _rangeFieldName,
+        Query _query,
+        TableId _tableDatasource,
+        TableId _ParentTableDatasource = 0)
+    {
+        QueryBuildDataSource qbds = SysQuery::findOrCreateDataSource(
+            _query,
+            _tableDatasource,
+            _ParentTableDatasource);
+
+        int queryBuildRangeCount = qbds.rangeCount();
+        for (int i = 1; i < queryBuildRangeCount; i++)
+        {
+            QueryBuildRange qbr = qbds.range(i);
+            if (qbr.fieldName() == _rangeFieldName)
+            {
+                return qbr.value();
+            }
+        }
+
+        return '';
+    }
 }
