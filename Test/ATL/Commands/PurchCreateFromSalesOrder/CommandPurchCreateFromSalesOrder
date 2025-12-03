@@ -1,5 +1,4 @@
 /// <summary>
-/// Model: Avanade Testing Helper Framework
 /// Class: CommandPurchCreateFromSalesOrder
 /// Description:
 /// Command class for creating a Purchase order from a sales order
