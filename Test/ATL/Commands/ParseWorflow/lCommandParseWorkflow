@@ -7,7 +7,7 @@
 /// Remarks:
 /// Use this interface to extend the framework with extended classes.
 /// </summary>
-public interface lCommandParseWorkflow
+internal interface lCommandParseWorkflow
 {
     /// <summary>
     /// Validates and execute the business logic.
