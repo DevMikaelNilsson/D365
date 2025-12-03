@@ -3,7 +3,7 @@
 /// Description:
 /// Command class for manually process the workflow system instead of using the batch service.
 /// </summary>
-public class CommandParseWorflow extends AtlCommand implements ICommandParseWorkflow
+internal class CommandParseWorflow extends AtlCommand implements ICommandParseWorkflow
 {
     /// <summary>
     /// Creates and returns a new class instance.
