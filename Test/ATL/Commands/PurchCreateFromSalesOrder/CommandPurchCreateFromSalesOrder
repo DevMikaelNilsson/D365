@@ -3,7 +3,7 @@
 /// Description:
 /// Command class for creating a Purchase order from a sales order
 /// </summary>
-public class CommandPurchCreateFromSalesOrder extends AtlCommand implements ICommandPurchCreateFromSalesOrder
+internal class CommandPurchCreateFromSalesOrder extends AtlCommand implements ICommandPurchCreateFromSalesOrder
 {
     private TmpPurchLinePrice tmpPurchLinePrice;
     private SalesTable salesTable;
