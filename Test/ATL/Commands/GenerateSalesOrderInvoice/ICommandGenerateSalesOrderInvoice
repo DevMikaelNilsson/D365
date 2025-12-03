@@ -7,7 +7,7 @@
 /// Remarks:
 /// Use this interface to extend the framework with extended classes.
 /// </summary>
-public interface ICommandGenerateSalesOrderInvoice
+internal interface ICommandGenerateSalesOrderInvoice
 {
     /// <summary>
     /// Set SalesUpdate parameter value
