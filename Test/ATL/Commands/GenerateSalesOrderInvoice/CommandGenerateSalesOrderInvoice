@@ -3,7 +3,7 @@
 /// Description:
 /// Command class for generating a sales order invoice
 /// </summary>
-public class CommandGenerateSalesOrderInvoice extends AtlCommand implements ICommandGenerateSalesOrderInvoice
+internal class CommandGenerateSalesOrderInvoice extends AtlCommand implements ICommandGenerateSalesOrderInvoice
 {
     private AtlEntitySalesOrder localEntitySalesOrder;
     private SalesUpdate localSalesUpdate;
