@@ -1,5 +1,4 @@
 /// <summary>
-/// Model: Avanade Testing Helper Framework
 /// Class: CommandGenerateSalesOrderInvoice
 /// Description:
 /// Command class for generating a sales order invoice
