@@ -1,0 +1,60 @@
+/// <summary>
+/// Class: CommandParseWorflow
+/// Description:
+/// Command class for manually process the workflow system instead of using the batch service.
+/// </summary>
+public class CommandParseWorflow extends AtlCommand implements AVATHFIAtlCommandParseWorkflow
+{
+    /// <summary>
+    /// Creates and returns a new class instance.
+    /// </summary>
+    /// <returns>CommandParseWorflow</returns>
+    public static CommandParseWorflow construct()
+    {
+        return new CommandParseWorflow();
+    }
+
+    /// <summary>
+    /// Executes the business logic.
+    /// </summary>
+    protected void executeTask()
+    {
+        this.runSysWorkflowMaintenanceTask();
+        this.runSysWorkflowMessageQueueManager();
+        this.runSysWorkflowNotificationManager();
+        this.WorkflowWorkItemDueDateJob();
+    }
+
+    /// <summary>
+    /// Runs the SysWorkflowMaintenanceTask class.
+    /// </summary>
+    protected void runSysWorkflowMaintenanceTask()
+    {
+        new SysWorkflowMaintenanceTask().runOperation();
+    }
+
+    /// <summary>
+    /// Runs the SysWorkflowMessageQueueManager class.
+    /// </summary>
+    protected void runSysWorkflowMessageQueueManager()
+    {
+        SysWorkflowMessageQueueManager::construct().runOperation();
+    }
+
+    /// <summary>
+    /// Runs the SysWorkflowNotificationManager class.
+    /// </summary>
+    protected void runSysWorkflowNotificationManager()
+    {
+        SysWorkflowNotificationManager::construct().runOperation();
+    }
+
+    /// <summary>
+    /// Runs the WorkflowWorkItemDueDateJob class.
+    /// </summary>
+    protected void WorkflowWorkItemDueDateJob()
+    {
+        new WorkflowWorkItemDueDateJob().runOperation();
+    }
+
+}
