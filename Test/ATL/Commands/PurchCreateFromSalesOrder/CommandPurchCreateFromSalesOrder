@@ -1,0 +1,296 @@
+/// <summary>
+/// Model: Avanade Testing Helper Framework
+/// Class: CommandPurchCreateFromSalesOrder
+/// Description:
+/// Command class for creating a Purchase order from a sales order
+/// </summary>
+public class CommandPurchCreateFromSalesOrder extends AtlCommand implements ICommandPurchCreateFromSalesOrder
+{
+    private TmpPurchLinePrice tmpPurchLinePrice;
+    private SalesTable salesTable;
+    private Query salesOrderQuery;
+    private TradeLineDlvType tradeLineDlvType;
+    private AccountNum vendor;
+
+    /// <summary>
+    /// Executes the business logic.
+    /// </summary>
+    protected void executeTask()
+    {
+        this.createFromSalesOrder();
+    }
+
+    /// <summary>
+    /// Set the SalesTable
+    /// </summary>
+    /// <param name = "_salesTable">SalesTable</param>
+    /// <returns>CommandPurchCreateFromSalesOrder</returns>
+    public CommandPurchCreateFromSalesOrder forSalesTable(SalesTable _salesTable)
+    {
+        salesTable = _salesTable;
+        salesOrderQuery = this.createSalesOrderQuery(salesTable);
+        return this;
+    }
+
+    /// <summary>
+    /// Set the vendor
+    /// </summary>
+    /// <param name = "_vendor">vendor</param>
+    /// <returns>CommandPurchCreateFromSalesOrder</returns>
+    public CommandPurchCreateFromSalesOrder setVendor(AccountNum _vendor)
+    {
+        vendor = _vendor;
+        return this;
+    }
+
+    /// <summary>
+    /// Set the TradeLineDlvType
+    /// </summary>
+    /// <param name = "_tradeLineDlvType">TradeLineDlvType</param>
+    /// <returns>CommandPurchCreateFromSalesOrder</returns>
+    public CommandPurchCreateFromSalesOrder setTradeLineDlvType(TradeLineDlvType _tradeLineDlvType)
+    {
+        tradeLineDlvType = _tradeLineDlvType;
+        return this;
+    }
+
+    /// <summary>
+    /// Constructs and returns a class instance
+    /// </summary>
+    /// <returns>CommandPurchCreateFromSalesOrder</returns>
+    public static CommandPurchCreateFromSalesOrder construct()
+    {
+        return new CommandPurchCreateFromSalesOrder();
+    }
+
+    /// <summary>
+    /// Inludes a specified SalesLine table record.
+    /// </summary>
+    /// <param name = "_salesLine">SalesLine</param>
+    /// <returns>CommandPurchCreateFromSalesOrder</returns>
+    public CommandPurchCreateFromSalesOrder setSalesLine(SalesLine _salesLine)
+    {
+        this.addSalesLineFilter(_salesLine);
+        return this;
+    }
+
+    /// <summary>
+    /// Creates a purchase order from a sales order
+    /// </summary>
+    protected void createFromSalesOrder()
+    {
+        this.runQueryAddSalesLineRecords();
+        PurchCreateFromSalesOrder purchCreateFromSalesOrder = PurchCreateFromSalesOrder::newPurchCreateFromSalesOrder(tradeLineDlvType);
+        purchCreateFromSalesOrder.getLast();
+        purchCreateFromSalesOrder.resetCurrentListCS();
+        purchCreateFromSalesOrder.initializeFromCallerRecord(salesTable);
+        purchCreateFromSalesOrder.parmTmpPurchLinePrice(tmpPurchLinePrice);
+        if (vendor)
+        {
+            purchCreateFromSalesOrder.parmTransferAddress(true);
+        }
+        purchCreateFromSalesOrder.runOperation();
+    }
+
+    /// <summary>
+    /// Get the TmpPurchLinePrice records.
+    /// </summary>
+    /// <returns>TmpPurchLinePrice</returns>
+    protected TmpPurchLinePrice parmTmpPurchLinePrice()
+    {
+        return tmpPurchLinePrice;
+    }
+
+    /// <summary>
+    /// Executes the query and adds all located SalesLine records to the TmpPurchLinePrice table.
+    /// </summary>
+    protected void runQueryAddSalesLineRecords()
+    {
+        QueryRun queryRun = new QueryRun(salesOrderQuery);
+        while(queryRun.next())
+        {
+            SalesLine currentSalesLine = queryRun.get(tableNum(SalesLine));
+            this.initTmpPurchLinePriceToCheckSalesLineIncluded(currentSalesLine, NoYes::Yes);
+        }
+    }
+
+    /// <summary>
+    /// Initializes the <c>TmpPurchLinePrice</c> record that's used to check if the sales line can be included.
+    /// </summary>
+    /// <param name = "_salesLine">The <c>SalesLine</c> record used for the initialization.</param>
+    /// <param name = "_included">Determines whether the sales line is marked as included.</param>
+    protected void initTmpPurchLinePriceToCheckSalesLineIncluded(
+        SalesLine _salesLine, 
+        NoYes _included)
+    {
+        tmpPurchLinePrice.clear();
+        tmpPurchLinePrice.initValue();
+        tmpPurchLinePrice.SalesId = _salesLine.SalesId;
+        tmpPurchLinePrice.LineNum = _salesLine.LineNum;
+        tmpPurchLinePrice.SalesLineRefRecId = _salesLine.RecId;
+        tmpPurchLinePrice.Included = _included;
+        tmpPurchLinePrice.ItemId = _salesLine.ItemId;
+        tmpPurchLinePrice.InventDimId = _salesLine.InventDimId;
+        tmpPurchLinePrice.AccountNum = this.retrieveVendAccount(_salesLine);
+        tmpPurchLinePrice.CurrencyCode = this.retrieveCurrencyCode(tmpPurchLinePrice.AccountNum);
+        tmpPurchLinePrice.initFromSalesLine(_salesLine);
+        this.calcPurchUnitAndQty(_salesLine);
+        tmpPurchLinePrice.write();
+        this.calculateLineAmount();
+    
+
+        if (tmpPurchLinePrice.Included == NoYes::No)
+        {
+            tmpPurchLinePrice.MultiLinePercent = 0;
+            tmpPurchLinePrice.MultiLineDisc    = 0;
+            this.calculateLineAmount();
+        }
+
+        tmpPurchLinePrice.write();
+    }
+
+    /// <summary>
+    /// Calculates the lineAmount
+    /// </summary>
+    protected void calculateLineAmount()
+    {
+        InterCompanyEndpointActionPolicy interCompanyEndpointActionPolicy = tmpPurchLinePrice.interCompanyActionPolicy();
+        if (this.mustResetPrice(interCompanyEndpointActionPolicy))
+        {
+            tmpPurchLinePrice.salesPurchLineInterface().resetPriceAgreement();
+            tmpPurchLinePrice.salesPurchLineInterface().setPriceAgreement(InventDim::find(tmpPurchLinePrice.InventDimId));
+        }
+        tmpPurchLinePrice.setLineAmount();
+    }
+
+    /// <summary>
+    /// Determines whether the price must be reset based on the intercompany end point policy.
+    /// </summary>
+    /// <param name = "_interCompanyEndpointActionPolicy">The intercompany policy.</param>
+    /// <returns>true if the price must be reset; otherwise, false.</returns>
+    protected boolean mustResetPrice(InterCompanyEndpointActionPolicy _interCompanyEndpointActionPolicy)
+    {
+        return (!_interCompanyEndpointActionPolicy || _interCompanyEndpointActionPolicy.PriceDiscountSearch);
+    }
+
+    /// <summary>
+    /// Set the PurchUnit and PurchQty values.
+    /// </summary>
+    /// <param name = "_salesLine">SalesLine</param>
+    protected void calcPurchUnitAndQty(SalesLine _salesLine)
+    {
+        tmpPurchLinePrice.PurchQty = EcoResProductUnitConverter::convertGivenUnitSymbolsForReleasedProduct(
+            _salesLine.ItemId,
+            _salesLine.InventDimId,
+            _salesLine.getPurchQty(),
+            _salesLine.SalesUnit,
+            tmpPurchLinePrice.PurchUnit,
+            NoYes::Yes);
+
+        switch(tradeLineDlvType)
+        {
+            case TradeLineDlvType::DropShip:
+                if (tmpPurchLinePrice.isInterCompanyVendor())
+                {
+                    tmpPurchLinePrice.PurchQty = _salesLine.getPurchQty();
+                }
+                break;
+            default:
+                if (tmpPurchLinePrice.isInterCompanyVendor())
+                {
+                    tmpPurchLinePrice.PurchUnit = _salesLine.SalesUnit;
+                    tmpPurchLinePrice.PurchQty = _salesLine.getPurchQty();
+                }
+                else
+                {
+                    tmpPurchLinePrice.PurchUnit = _salesLine.inventTable().purchUnitId();
+                    tmpPurchLinePrice.PurchQty = EcoResProductUnitConverter::convertGivenUnitSymbolsForReleasedProduct(
+                    tmpPurchLinePrice.ItemId,
+                    tmpPurchLinePrice.InventDimId,
+                    _salesLine.getPurchQty(),
+                    _salesLine.SalesUnit,
+                    tmpPurchLinePrice.PurchUnit,
+                    NoYes::Yes);
+                }
+                break;
+        }
+    }
+
+    /// <summary>
+    /// Retrieves the vendor account based on the sales line record.
+    /// </summary>
+    /// <param name="_salesLine">
+    /// The sales line record.
+    /// </param>
+    /// <returns>
+    /// A vendor account.
+    /// </returns>
+    protected VendAccount retrieveVendAccount(
+        SalesLine _salesLine)
+    {
+        if (vendor)
+        {
+            return vendor;
+        }
+
+        return _salesLine
+            .inventTable()
+            .primaryVendorId(_salesLine.InventDimId);
+    
+    }
+
+    /// <summary>
+    /// Retrieves the currency code for the given vendor account number.
+    /// </summary>
+    /// <param name="_vendAccount">
+    /// The vendor account number.
+    /// </param>
+    /// <returns>
+    /// The currency code of a vendor record.
+    /// </returns>
+    [Replaceable]
+    protected CurrencyCode retrieveCurrencyCode(
+        VendAccount _vendAccount)
+    {
+        return VendTable::find(
+                _vendAccount)
+            .Currency;
+    }
+
+    /// <summary>
+    /// Create a query for the class.
+    /// </summary>
+    /// <param name = "_salesTable">SalesTable</param>
+    /// <returns>Query</returns>
+    protected Query createSalesOrderQuery(
+        SalesTable _salesTable)
+    {
+        Query tempSalesOrderQuery = new Query();
+        QueryBuildDataSource qbdsSalesTable = SysQuery::findOrCreateDataSource(tempSalesOrderQuery, tableNum(SalesTable));
+        QueryBuildDataSource qbdsSalesLine = SysQuery::findOrCreateDataSource(tempSalesOrderQuery, tableNum(SalesLine), tableNum(SalesTable));
+        qbdsSalesLine.relations(true);
+        SysQuery::findOrCreateRange(qbdsSalesTable, fieldNum(SalesTable, SalesId)).value(_salesTable.SalesId);
+        return tempSalesOrderQuery;
+    }
+
+    /// <summary>
+    /// Adds a SalesLine record as a filter to the query
+    /// </summary>
+    /// <param name = "_salesLine">SalesLine</param>
+    /// <returns>Query</returns>
+    protected Query addSalesLineFilter(
+        SalesLine _salesLine)
+    {
+        QueryBuildDataSource qbdsSalesLine = SysQuery::findOrCreateDataSource(
+            salesOrderQuery,
+            tableNum(SalesLine),
+            tableNum(SalesTable));
+
+        qbdsSalesLine.addRange(
+            fieldNum(SalesLine, InventTransId))
+        .value(SysQuery::value(_salesLine.InventTransId));
+
+        return salesOrderQuery;
+    }
+
+}
