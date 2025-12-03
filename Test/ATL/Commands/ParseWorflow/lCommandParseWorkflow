@@ -3,7 +3,7 @@
 /// Description:
 /// ATL helper class base framework.
 /// This interface defines all required methods for all standard and extended
-/// AVATHFAtlCommandParseWorflow classes used with this framework.
+/// CommandParseWorflow classes used with this framework.
 /// Remarks:
 /// Use this interface to extend the framework with extended classes.
 /// </summary>
