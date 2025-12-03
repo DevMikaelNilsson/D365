@@ -6,5 +6,8 @@ code or to remind or educate on how to solve a specific request.
 - **Models** - Custom classes which contains general (usually static) methods which is intended for a single specific table/class/process.
 - **Services** - Custom classes which performs a single, specific process.
 
+## Test / ATL
+- **Command** - Very similar to a service class, a class that performs a single specific process for Unit-/Process-/e2e test.
+
 ## Code language
 All classes are written in X++
