@@ -27,7 +27,7 @@ public class QueryModel
     /// <summary>
     /// Clear all ranges
     /// </summary>
-    /// <returns>AVAQueryModel</returns>
+    /// <returns>QueryModel</returns>
     public QueryModel clearRanges()
     {
         localQueryDatasource
@@ -75,7 +75,7 @@ public class QueryModel
     /// <param name = "_query">Query</param>
     /// <param name = "_tableDatasource">TableId</param>
     /// <param name = "_ParentTableDatasource">TableId</param>
-    /// <returns>AVAQueryModel</returns>
+    /// <returns>QueryModel</returns>
     private QueryModel initFromQuery(
         Query _query,
         TableId _tableDatasource,
@@ -92,7 +92,7 @@ public class QueryModel
     /// Initalizes the new class instance with QueryBuildDatasource.
     /// </summary>
     /// <param name = "_queryDatasource">QueryBuildDatasource</param>
-    /// <returns>AVAQueryModel</returns>
+    /// <returns>QueryModel</returns>
     private QueryModel initFromQueryBuildDatasource(
         QueryBuildDatasource _queryDatasource)
     {
