@@ -75,6 +75,7 @@ public class QueryModel
     /// <param name = "_query">Query</param>
     /// <param name = "_tableDatasource">TableId</param>
     /// <param name = "_ParentTableDatasource">TableId</param>
+    /// <returns>AVAQueryModel</returns>
     private QueryModel initFromQuery(
         Query _query,
         TableId _tableDatasource,
@@ -91,6 +92,7 @@ public class QueryModel
     /// Initalizes the new class instance with QueryBuildDatasource.
     /// </summary>
     /// <param name = "_queryDatasource">QueryBuildDatasource</param>
+    /// <returns>AVAQueryModel</returns>
     private QueryModel initFromQueryBuildDatasource(
         QueryBuildDatasource _queryDatasource)
     {
