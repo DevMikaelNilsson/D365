@@ -1,0 +1,4 @@
+select NAME 
+  from SQLDICTIONARY
+ where TABLEID = -- TABLEID (ex. 505)
+   and FIELDID = 0
