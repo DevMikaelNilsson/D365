@@ -11,4 +11,5 @@ code or to remind or educate on how to solve a specific request.
 - **Command** - Very similar to a service class, a class that performs a single specific process for Unit-/Process-/e2e test.
 
 ## Code language
-All classes are written in X++
+All classes are written in X++.
+T-SQL scripts are written in T-SQL.
