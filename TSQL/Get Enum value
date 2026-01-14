@@ -1,0 +1,4 @@
+SELECT * from ENUMVALUETABLE
+   join ENUMIDTABLE
+   on enumid = IDVALUE
+   and ENUMIDTABLE.NAME = 'ENUM NAME'
