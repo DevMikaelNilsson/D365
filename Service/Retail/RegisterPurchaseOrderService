@@ -1,0 +1,74 @@
+/// <summary>
+/// Custom service class that registers a purchase order line position
+/// </summary>
+public class RegisterPurchaseOrderService
+{
+    private PurchLine localPurchLine;
+    private InventDim localInventDim;
+    private boolean localSkipQualityOrderCreation;
+
+    /// <summary>
+    /// Creates a new class instance
+    /// </summary>
+    /// <param name = "_purchLine">PurchLine</param>
+    /// <param name = "_inventDim">InventDim</param>
+    protected void new(
+        PurchLine _purchLine,
+        InventDim _inventDim,
+        boolean _skipQualityOrderCreation = false)
+    {
+        localPurchLine = _purchLine;
+        localInventDim = _inventDim;
+        localSkipQualityOrderCreation = _skipQualityOrderCreation;
+    }
+
+    /// <summary>
+    /// Constructs and returns a new class instance
+    /// </summary>
+    /// <param name = "_purchLine">PurchLine</param>
+    /// <param name = "_inventDim">InventDim</param>
+    /// <param name = "_skipQualityOrderCreation">boolean</param>
+    /// <returns>RegisterPurchaseOrderService</returns>
+    public static RegisterPurchaseOrderService construct(
+        PurchLine _purchLine,
+        InventDim _inventDim,
+        boolean _skipQualityOrderCreation = false)
+    {
+        return new RegisterPurchaseOrderService(
+            _purchLine,
+            _inventDim,
+            _skipQualityOrderCreation);
+    }
+
+    /// <summary>
+    /// Register a purchase order
+    /// </summary>
+    /// <returns>ServiceResult</returns>
+    public ServiceResult register(
+        InventQtyRegisterNow _registerNowQty)
+    {
+        try
+        {
+            InventDimParm inventDimParm = localInventDim.toDimParm();
+            InventMovement movement = InventMovement::construct(localPurchLine);
+
+            InventUpd_Registered registered = InventUpd_Registered::newParameters(
+                movement, 
+                localInventDim,
+                localInventDim.toDimParm(), 
+                localInventDim,
+                inventDimParm, 
+                _registerNowQty);
+
+            registered.parmSkipQualityOrderCreation(localSkipQualityOrderCreation);
+            registered.updateNow();
+        }
+        catch
+        {
+            return ServiceResult::construct(false, "Unhandled error while registering a purchase order position");
+        }
+
+        return ServiceResult::construct();
+    }
+
+}
