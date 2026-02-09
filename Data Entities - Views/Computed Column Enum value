@@ -1,0 +1,33 @@
+/// <summary>
+/// Custom methods for the Data Entity
+/// </summary>
+public class EntitySpecConfigEntity extends common
+{
+    /// <summary>
+    /// Convert the EntityStatus field value from a Enum int into a string
+    /// </summary>
+    /// <returns>str</returns>
+    public static str EntityStatusEnumAsString()
+    {
+        SysDictEnum dictEnum = new SysDictEnum(enumNum(EntityStatus));
+        Map mapping = SysComputedColumn::comparisionExpressionMap();
+
+        for (int i = 0; i < dictEnum.values(); i++)
+        {
+            mapping.insert(
+                SysComputedColumn::comparisonLiteral(dictEnum.index2Value(i)),
+                SysComputedColumn::returnLiteral(dictEnum.index2Label(i)));
+        }
+
+        str comparisonField = SysComputedColumn::comparisonField(
+            tableStr(EntitySpecConfigEntity),
+            dataEntityDataSourceStr(EntitySpecConfigEntity, EntityTable),
+            fieldStr(EntityTable, EntityStatus));
+
+        return SysComputedColumn::switch(
+            comparisonField, 
+            mapping, 
+            SysComputedColumn::returnLiteral(''));
+    }
+
+}
