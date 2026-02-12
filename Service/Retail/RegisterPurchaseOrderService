@@ -49,19 +49,27 @@ public class RegisterPurchaseOrderService
     {
         try
         {
+            ttsbegin;
+            /* 
+                PurchLine has cache property activated, so it is required to select the record within local transaction with forupdate flag.
+                Otherwise the InventMovement will generate an "Cannot call NEXT, update(), or delete() on buffer where data is selected or inserted in another transactionscope." 
+                error when updating the PurchLine record.
+            */
+            PurchLine currentPurchLine = PurchLine::findInventTransId(localPurchLine.InventTransId, true);
             InventDimParm inventDimParm = localInventDim.toDimParm();
-            InventMovement movement = InventMovement::construct(localPurchLine);
+            InventMovement movement = InventMovement::construct(currentPurchLine);
 
             InventUpd_Registered registered = InventUpd_Registered::newParameters(
                 movement, 
                 localInventDim,
-                localInventDim.toDimParm(), 
+                localInventDim.toDimParm(),
                 localInventDim,
                 inventDimParm, 
                 _registerNowQty);
 
             registered.parmSkipQualityOrderCreation(localSkipQualityOrderCreation);
             registered.updateNow();
+            ttscommit;
         }
         catch
         {
